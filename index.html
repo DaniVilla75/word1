@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cuestionario Word Gamificado</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .question h3 {
+      margin-bottom: 10px;
+      color: #444;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+    input[type="radio"] {
+      margin-right: 10px;
+    }
+    .feedback {
+      margin-top: 5px;
+      font-weight: bold;
+    }
+    #timer {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #0078D7;
+    }
+    button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: #0078D7;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #resultado {
+      margin-top: 30px;
+      padding: 20px;
+      background: #e6f7ff;
+      border-left: 5px solid #0078D7;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Cuestionario Word Gamificado</h1>
+    <div id="timer">⏱ Tiempo restante: <span id="time">60</span> segundos</div>
+
+    <form id="quizForm">
+      <div class="question">
+        <h3>1. ¿Qué herramienta permite cambiar el tipo de letra?</h3>
+        <div class="options">
+          <label><input type="radio" name="q1" value="1" onclick="feedback(this, 'q1')"> Fuente</label>
+          <label><input type="radio" name="q1" value="0" onclick="feedback(this, 'q1')"> Negrita</label>
+          <label><input type="radio" name="q1" value="0" onclick="feedback(this, 'q1')"> Insertar imagen</label>
+        </div>
+        <div class="feedback" id="fb-q1"></div>
+      </div>
+
+      <div class="question">
+        <h3>2. ¿Cómo se modifica el tamaño del texto?</h3>
+        <div class="options">
+          <label><input type="radio" name="q2" value="0" onclick="feedback(this, 'q2')"> Alineación</label>
+          <label><input type="radio" name="q2" value="1" onclick="feedback(this, 'q2')"> Tamaño de fuente</label>
+          <label><input type="radio" name="q2" value="0" onclick="feedback(this, 'q2')"> Color de página</label>
+        </div>
+        <div class="feedback" id="fb-q2"></div>
+      </div>
+
+      <div class="question">
+        <h3>3. ¿Qué hace la herramienta “Negrita”?</h3>
+        <div class="options">
+          <label><input type="radio" name="q3" value="0" onclick="feedback(this, 'q3')"> Subraya el texto</label>
+          <label><input type="radio" name="q3" value="0" onclick="feedback(this, 'q3')"> Lo pone en cursiva</label>
+          <label><input type="radio" name="q3" value="1" onclick="feedback(this, 'q3')"> Lo resalta en negro</label>
+        </div>
+        <div class="feedback" id="fb-q3"></div>
+      </div>
+
+      <div class="question">
+        <h3>4. ¿Qué opción se usa para centrar el texto?</h3>
+        <div class="options">
+          <label><input type="radio" name="q4" value="0" onclick="feedback(this, 'q4')"> Justificar</label>
+          <label><input type="radio" name="q4" value="0" onclick="feedback(this, 'q4')"> Alinear a la izquierda</label>
+          <label><input type="radio" name="q4" value="1" onclick="feedback(this, 'q4')"> Centrar</label>
+        </div>
+        <div class="feedback" id="fb-q4"></div>
+      </div>
+
+      <div class="question">
+        <h3>5. ¿Cómo se inserta una imagen en Word?</h3>
+        <div class="options">
+          <label><input type="radio" name="q5" value="1" onclick="feedback(this, 'q5')"> Insertar &gt; Imagen</label>
+          <label><input type="radio" name="q5" value="0" onclick="feedback(this, 'q5')"> Diseño &gt; Tema</label>
+          <label><input type="radio" name="q5" value="0" onclick="feedback(this, 'q5')"> Revisar &gt; Comentarios</label>
+        </div>
+        <div class="feedback" id="fb-q5"></div>
+      </div>
+
+      <button type="button" onclick="calcularResultado()">Finalizar</button>
+    </form>
+
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    let puntuacion = 0;
+    let respondidas = {};
+
+    function feedback(input, pregunta) {
+      if (respondidas[pregunta]) return;
+      respondidas[pregunta] = true;
+      let correcto = input.value === "1";
+      let fb = document.getElementById("fb-" + pregunta);
+      if (correcto) {
+        fb.textContent = "✅ ¡Correcto!";
+        fb.style.color = "green";
+        puntuacion++;
+      } else {
+        fb.textContent = "❌ Ups, no es esa.";
+        fb.style.color = "red";
+      }
+    }
+
+    function calcularResultado() {
+      let total = 5;
+      let mensaje = "";
+
+      if (puntuacion === 5) {
+        mensaje = "🌟 ¡Perfecto! Dominás Word como un experto.";
+      } else if (puntuacion >= 3) {
+        mensaje = "👏 ¡Muy bien! Tenés una buena base, seguí practicando.";
+      } else {
+        mensaje = "💡 ¡No te rindas! Cada error es una oportunidad para aprender.";
+      }
+
+      document.getElementById("resultado").innerHTML = `
+        <h2>📊 Resultado Final</h2>
+        <p>✅ Correctas: <strong>${puntuacion}</strong></p>
+        <p>❌ Incorrectas: <strong>${total - puntuacion}</strong></p>
+        <p>${mensaje}</p>
+      `;
+    }
+
+    // Temporizador
+    let tiempo = 60;
+    let timer = setInterval(() => {
+      tiempo--;
+      document.getElementById("time").textContent = tiempo;
+      if (tiempo <= 0) {
+        clearInterval(timer);
+        calcularResultado();
+        alert("⏰ ¡Tiempo terminado!");
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
